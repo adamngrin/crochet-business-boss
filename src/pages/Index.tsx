@@ -1,10 +1,11 @@
+
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import MobileNav from "@/components/MobileNav";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Package, Users, Calendar, DollarSign, TrendingUp, ShoppingBag, PlusCircle } from "lucide-react";
+import { Package, Users, Calendar, PhilippinePeso, TrendingUp, ShoppingBag, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -45,9 +46,9 @@ const statsCards = [
   },
   {
     title: "Total Sales",
-    value: "$4,320",
+    value: "₱4,320",
     description: "+18% from last month",
-    icon: DollarSign,
+    icon: PhilippinePeso,
     color: "text-yarn-sage",
   },
   {
@@ -155,12 +156,13 @@ const Index = () => {
                       backgroundColor: "#FFF8E8", 
                       borderColor: "#EAE4E9",
                       borderRadius: "8px" 
-                    }} 
+                    }}
+                    formatter={(value) => [`₱${value}`, "Revenue"]}
                   />
                   <Line 
                     type="monotone" 
                     dataKey="amount" 
-                    name="Revenue ($)" 
+                    name="Revenue (₱)" 
                     stroke="#9C89B8" 
                     strokeWidth={2}
                     dot={{ fill: "#9C89B8" }}
@@ -226,7 +228,7 @@ const Index = () => {
                         <p className="text-xs text-muted-foreground">{sale.date}</p>
                       </div>
                     </div>
-                    <div className="font-medium">${sale.price.toFixed(2)}</div>
+                    <div className="font-medium">₱{sale.price.toFixed(2)}</div>
                   </div>
                 ))}
               </div>
@@ -240,19 +242,22 @@ const Index = () => {
               <CardDescription>Frequently used tools</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-3">
-              <Button className="bg-yarn-lavender text-white border-none hover:bg-yarn-lavender/90 justify-start">
+              <Button className="bg-yarn-lavender text-white border-none hover:bg-yarn-lavender/90 justify-start"
+                onClick={() => navigate('/products')}>
                 <Package size={16} className="mr-2" />
                 Add New Product
               </Button>
-              <Button className="bg-yarn-rose text-white border-none hover:bg-yarn-rose/90 justify-start">
+              <Button className="bg-yarn-rose text-white border-none hover:bg-yarn-rose/90 justify-start"
+                onClick={() => navigate('/custom-orders')}>
                 <ShoppingBag size={16} className="mr-2" />
-                Record Sale
+                Record Custom Order
               </Button>
               <Button className="bg-yarn-sage text-white border-none hover:bg-yarn-sage/90 justify-start">
                 <TrendingUp size={16} className="mr-2" />
                 Price Calculator
               </Button>
-              <Button variant="outline" className="justify-start">
+              <Button variant="outline" className="justify-start"
+                onClick={() => navigate('/consignors')}>
                 <Users size={16} className="mr-2" />
                 Manage Consignors
               </Button>

@@ -8,43 +8,54 @@ const SidebarLink = ({ to, icon: Icon, label, active }: { to: string; icon: Reac
   <Link
     to={to}
     className={cn(
-      "flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 hover:bg-sidebar-accent group",
-      active ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground"
+      "flex items-center gap-3 rounded-lg px-3 py-2 transition-all hover:text-primary",
+      active ? "bg-primary/10 text-primary" : "text-muted-foreground"
     )}
   >
-    <Icon size={20} className={active ? "text-yarn-rose" : "text-sidebar-foreground group-hover:text-yarn-rose"} />
+    <Icon size={16} className="shrink-0" />
     <span>{label}</span>
   </Link>
 );
 
 const Sidebar = () => {
   const location = useLocation();
-  const currentPath = location.pathname;
-
+  
+  const links = [
+    { to: "/", label: "Dashboard", icon: Home },
+    { to: "/products", label: "Products", icon: Package },
+    { to: "/custom-orders", label: "Custom Orders", icon: ShoppingBag },
+    { to: "/stores", label: "Stores", icon: Store },
+    { to: "/consignors", label: "Consignors", icon: Users },
+    { to: "/events", label: "Events", icon: Calendar },
+    { to: "/reports", label: "Reports", icon: BarChart },
+    { to: "/settings", label: "Settings", icon: Settings },
+  ];
+  
   return (
-    <aside className="hidden md:flex flex-col w-64 min-h-screen bg-sidebar p-4 text-sidebar-foreground">
-      <div className="flex items-center gap-3 py-4 px-2 mb-8">
-        <div className="flex items-center justify-center w-10 h-10 rounded-full yarn-gradient">
-          <CircleUser size={20} className="text-white" />
+    <aside className="hidden md:flex flex-col border-r bg-card w-[240px] p-6">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-8 h-8 rounded-full yarn-gradient flex items-center justify-center">
+          <CircleUser size={16} className="text-white" />
         </div>
-        <h1 className="text-xl font-semibold">Catherine Crochets</h1>
+        <span className="text-lg font-semibold">Catherine Crochets</span>
       </div>
       
-      <div className="flex flex-col gap-1">
-        <SidebarLink to="/" icon={Home} label="Dashboard" active={currentPath === "/"} />
-        <SidebarLink to="/products" icon={Package} label="Products" active={currentPath.startsWith("/products")} />
-        <SidebarLink to="/custom-orders" icon={ShoppingBag} label="Custom Orders" active={currentPath.startsWith("/custom-orders")} />
-        <SidebarLink to="/stores" icon={Store} label="Stores" active={currentPath.startsWith("/stores")} />
-        <SidebarLink to="/consignors" icon={Users} label="Consignors" active={currentPath.startsWith("/consignors")} />
-        <SidebarLink to="/events" icon={Calendar} label="Events" active={currentPath.startsWith("/events")} />
-        <SidebarLink to="/reports" icon={BarChart} label="Reports" active={currentPath.startsWith("/reports")} />
-      </div>
-
-      <div className="mt-auto flex flex-col gap-1">
-        <SidebarLink to="/settings" icon={Settings} label="Settings" active={currentPath.startsWith("/settings")} />
-        <button className="flex items-center gap-4 px-4 py-3 rounded-lg transition-all duration-200 text-sidebar-foreground hover:bg-sidebar-accent group">
-          <LogOut size={20} className="text-sidebar-foreground group-hover:text-yarn-rose" />
-          <span>Logout</span>
+      <nav className="space-y-1.5">
+        {links.map((link) => (
+          <SidebarLink 
+            key={link.to}
+            to={link.to}
+            icon={link.icon}
+            label={link.label}
+            active={location.pathname === link.to}
+          />
+        ))}
+      </nav>
+      
+      <div className="mt-auto pt-4">
+        <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary w-full">
+          <LogOut size={16} className="shrink-0" />
+          <span>Log out</span>
         </button>
       </div>
     </aside>

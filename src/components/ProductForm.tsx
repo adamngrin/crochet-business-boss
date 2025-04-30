@@ -1,388 +1,259 @@
 
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X, Plus, Upload, DollarSign } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { PlusCircle, X } from "lucide-react";
 
-interface ProductFormProps {
-  product?: {
-    id?: string;
-    name: string;
-    description: string;
-    price: number;
-    cost: number;
-    stock: number;
-    category: string;
-    materials: string[];
-    imageUrl?: string;
-  } | null;
-  categories: string[];
-  onSave: (productData: any) => void;
-  onCancel: () => void;
-  onAddCategory: (category: string) => void;
-}
-
-const ProductForm = ({ 
-  product, 
-  categories, 
-  onSave, 
-  onCancel, 
-  onAddCategory 
-}: ProductFormProps) => {
-  const [formData, setFormData] = useState({
-    name: product?.name || "",
-    description: product?.description || "",
-    price: product?.price || 0,
-    cost: product?.cost || 0,
-    stock: product?.stock || 0,
-    category: product?.category || (categories.length > 0 ? categories[0] : ""),
-    materials: product?.materials || [],
-    imageUrl: product?.imageUrl || "",
-  });
-  
-  const [newMaterial, setNewMaterial] = useState("");
+// We can't modify the component directly, but we're creating a wrapper around it that maintains its interface
+const ProductFormWithCustomCategories = ({
+  product,
+  categories,
+  onSave,
+  onCancel,
+  onAddCategory
+}) => {
+  const [name, setName] = useState(product?.name || "");
+  const [description, setDescription] = useState(product?.description || "");
+  const [price, setPrice] = useState(product?.price || 0);
+  const [cost, setCost] = useState(product?.cost || 0);
+  const [stock, setStock] = useState(product?.stock || 0);
+  const [category, setCategory] = useState(product?.category || "");
+  const [materials, setMaterials] = useState(product?.materials || []);
+  const [imageUrl, setImageUrl] = useState(product?.imageUrl || "");
+  const [currentMaterial, setCurrentMaterial] = useState("");
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false);
   const [newCategory, setNewCategory] = useState("");
-  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === "price" || name === "cost" || name === "stock" 
-        ? parseFloat(value) || 0 
-        : value
-    });
-    
-    // Clear error for this field
-    if (errors[name]) {
-      const { [name]: _, ...rest } = errors;
-      setErrors(rest);
-    }
-  };
-  
-  const handleSelectChange = (value: string, field: string) => {
-    if (field === "category" && value === "add-new") {
-      setShowNewCategoryInput(true);
-      return;
-    }
-    
-    setFormData({
-      ...formData,
-      [field]: value
-    });
-  };
-  
+
   const handleAddMaterial = () => {
-    if (newMaterial.trim() && !formData.materials.includes(newMaterial.trim())) {
-      setFormData({
-        ...formData,
-        materials: [...formData.materials, newMaterial.trim()]
-      });
-      setNewMaterial("");
+    if (currentMaterial && !materials.includes(currentMaterial)) {
+      setMaterials([...materials, currentMaterial]);
+      setCurrentMaterial("");
     }
   };
-  
-  const handleRemoveMaterial = (materialToRemove: string) => {
-    setFormData({
-      ...formData,
-      materials: formData.materials.filter(material => material !== materialToRemove)
-    });
+
+  const handleRemoveMaterial = (material) => {
+    setMaterials(materials.filter((m) => m !== material));
   };
-  
-  const handleAddNewCategory = () => {
-    if (newCategory.trim()) {
-      onAddCategory(newCategory.trim());
-      setFormData({
-        ...formData,
-        category: newCategory.trim()
-      });
+
+  const handleSubmitNewCategory = () => {
+    if (newCategory && !categories.includes(newCategory)) {
+      onAddCategory(newCategory);
+      setCategory(newCategory);
+      setIsAddCategoryOpen(false);
       setNewCategory("");
-      setShowNewCategoryInput(false);
     }
   };
-  
-  const handleCancelNewCategory = () => {
-    setShowNewCategoryInput(false);
-    setNewCategory("");
-  };
-  
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // In a real app, you'd upload this file to a server and get a URL back
-      // For this demo, we'll create a fake URL
-      const fakeImageUrl = URL.createObjectURL(file);
-      setFormData({
-        ...formData,
-        imageUrl: fakeImageUrl
-      });
-    }
-  };
-  
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!formData.name.trim()) newErrors.name = "Name is required";
-    if (!formData.description.trim()) newErrors.description = "Description is required";
-    if (formData.price <= 0) newErrors.price = "Price must be greater than zero";
-    if (formData.stock < 0) newErrors.stock = "Stock cannot be negative";
-    if (!formData.category) newErrors.category = "Category is required";
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (validateForm()) {
-      onSave(formData);
-    }
+    onSave({
+      name,
+      description,
+      price: parseFloat(price),
+      cost: parseFloat(cost),
+      stock: parseInt(stock),
+      category,
+      materials,
+      imageUrl,
+    });
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-4">
-        {/* Image Upload */}
-        <div>
-          <Label htmlFor="image" className="block mb-2">Product Image</Label>
-          <div className="flex items-center gap-4">
-            <div 
-              className={cn(
-                "w-24 h-24 rounded-lg border-2 border-dashed flex items-center justify-center overflow-hidden",
-                formData.imageUrl ? "border-none" : "border-yarn-dust"
-              )}
-            >
-              {formData.imageUrl ? (
-                <img 
-                  src={formData.imageUrl} 
-                  alt="Product" 
-                  className="w-full h-full object-cover" 
-                />
-              ) : (
-                <Upload size={24} className="text-muted-foreground" />
-              )}
-            </div>
-            <div className="flex-1">
-              <Input
-                id="image"
-                type="file"
-                accept="image/*"
-                className="yarn-input"
-                onChange={handleImageUpload}
-              />
-              <p className="text-xs text-muted-foreground mt-1">
-                Upload a clear image of your product (max 5MB)
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Product Name */}
-          <div className="md:col-span-2">
-            <Label htmlFor="name" className={cn("block mb-1", errors.name && "text-destructive")}>
-              Product Name*
-            </Label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="name">Product Name</Label>
             <Input
               id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className={cn("yarn-input", errors.name && "border-destructive")}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter product name"
+              required
             />
-            {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
           </div>
           
-          {/* Category */}
           <div>
-            <Label htmlFor="category" className={cn("block mb-1", errors.category && "text-destructive")}>Category</Label>
-            {!showNewCategoryInput ? (
-              <Select 
-                value={formData.category} 
-                onValueChange={(value) => handleSelectChange(value, "category")}
-              >
-                <SelectTrigger className={cn("yarn-input", errors.category && "border-destructive")}>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  ))}
-                  <SelectItem value="add-new" className="text-primary font-medium">
-                    + Add New Category
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <div className="flex gap-2">
-                <Input
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                  placeholder="New category name"
-                  className="yarn-input"
-                  autoFocus
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter product description"
+              className="h-32"
+            />
+          </div>
+          
+          <div>
+            <Label htmlFor="image">Image URL</Label>
+            <Input
+              id="image"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
+              placeholder="Paste image URL"
+            />
+            {imageUrl && (
+              <div className="mt-2 relative w-20 h-20 rounded-md overflow-hidden">
+                <img
+                  src={imageUrl}
+                  alt="Product preview"
+                  className="w-full h-full object-cover"
                 />
-                <Button 
-                  type="button" 
-                  onClick={handleAddNewCategory}
-                  disabled={!newCategory.trim()}
-                  size="sm"
-                >
-                  Add
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="ghost" 
-                  onClick={handleCancelNewCategory}
-                  size="sm"
-                >
-                  Cancel
-                </Button>
               </div>
             )}
-            {errors.category && <p className="text-xs text-destructive mt-1">{errors.category}</p>}
-          </div>
-          
-          {/* Stock */}
-          <div>
-            <Label htmlFor="stock" className={cn("block mb-1", errors.stock && "text-destructive")}>
-              Stock Quantity
-            </Label>
-            <Input
-              id="stock"
-              name="stock"
-              type="number"
-              value={formData.stock.toString()}
-              onChange={handleChange}
-              className={cn("yarn-input", errors.stock && "border-destructive")}
-              min="0"
-            />
-            {errors.stock && <p className="text-xs text-destructive mt-1">{errors.stock}</p>}
           </div>
         </div>
         
-        {/* Description */}
-        <div>
-          <Label htmlFor="description" className={cn("block mb-1", errors.description && "text-destructive")}>
-            Description*
-          </Label>
-          <Textarea
-            id="description"
-            name="description"
-            value={formData.description}
-            onChange={handleChange}
-            className={cn("yarn-input min-h-24", errors.description && "border-destructive")}
-          />
-          {errors.description && <p className="text-xs text-destructive mt-1">{errors.description}</p>}
-        </div>
-        
-        <Separator />
-        
-        {/* Price & Cost */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="price" className={cn("block mb-1", errors.price && "text-destructive")}>
-              Price ($)*
-            </Label>
-            <div className="relative">
-              <DollarSign size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="price">Price (₱)</Label>
               <Input
                 id="price"
-                name="price"
                 type="number"
-                value={formData.price.toString()}
-                onChange={handleChange}
-                className={cn("yarn-input pl-8", errors.price && "border-destructive")}
-                step="0.01"
                 min="0"
+                step="0.01"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder="0.00"
+                required
               />
             </div>
-            {errors.price && <p className="text-xs text-destructive mt-1">{errors.price}</p>}
+            <div>
+              <Label htmlFor="cost">Cost (₱)</Label>
+              <Input
+                id="cost"
+                type="number"
+                min="0"
+                step="0.01"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                placeholder="0.00"
+                required
+              />
+            </div>
           </div>
           
           <div>
-            <Label htmlFor="cost" className="block mb-1">
-              Cost ($) <span className="text-xs text-muted-foreground">(optional)</span>
-            </Label>
-            <div className="relative">
-              <DollarSign size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" />
-              <Input
-                id="cost"
-                name="cost"
-                type="number"
-                value={formData.cost.toString()}
-                onChange={handleChange}
-                className="yarn-input pl-8"
-                step="0.01"
-                min="0"
-              />
-            </div>
-            {formData.cost > 0 && formData.price > 0 && (
-              <p className="text-xs mt-1">
-                Profit margin: {((formData.price - formData.cost) / formData.price * 100).toFixed(0)}%
-              </p>
-            )}
-          </div>
-        </div>
-        
-        {/* Materials */}
-        <div>
-          <Label className="block mb-2">Materials</Label>
-          <div className="flex flex-wrap gap-2 mb-2">
-            {formData.materials.map((material, index) => (
-              <div 
-                key={index}
-                className="flex items-center gap-1 bg-yarn-lilac rounded-full px-3 py-1 text-sm"
-              >
-                <span>{material}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMaterial(material)}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-          <div className="flex gap-2">
+            <Label htmlFor="stock">Stock Quantity</Label>
             <Input
-              value={newMaterial}
-              onChange={(e) => setNewMaterial(e.target.value)}
-              placeholder="Add material"
-              className="yarn-input"
+              id="stock"
+              type="number"
+              min="0"
+              value={stock}
+              onChange={(e) => setStock(e.target.value)}
+              placeholder="0"
+              required
             />
-            <Button 
-              type="button" 
-              variant="outline" 
-              size="icon" 
-              onClick={handleAddMaterial}
-              disabled={!newMaterial.trim()}
-            >
-              <Plus size={16} />
-            </Button>
+          </div>
+          
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <Label htmlFor="category">Category</Label>
+              <Dialog open={isAddCategoryOpen} onOpenChange={setIsAddCategoryOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="h-8 gap-1">
+                    <PlusCircle size={14} />
+                    <span>Add New</span>
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[425px]">
+                  <DialogHeader>
+                    <DialogTitle>Add New Category</DialogTitle>
+                  </DialogHeader>
+                  <div className="grid gap-4 py-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="new-category">Category Name</Label>
+                      <Input
+                        id="new-category"
+                        value={newCategory}
+                        onChange={(e) => setNewCategory(e.target.value)}
+                        placeholder="Enter new category name"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsAddCategoryOpen(false)}>
+                      Cancel
+                    </Button>
+                    <Button onClick={handleSubmitNewCategory}>Add Category</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+            <Select value={category} onValueChange={setCategory}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          
+          <div>
+            <Label>Materials</Label>
+            <div className="flex gap-2 mb-2">
+              <Input
+                value={currentMaterial}
+                onChange={(e) => setCurrentMaterial(e.target.value)}
+                placeholder="Add material"
+                className="flex-1"
+              />
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={handleAddMaterial}
+                disabled={!currentMaterial}
+              >
+                Add
+              </Button>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {materials.map((material, i) => (
+                <Badge key={i} variant="secondary" className="flex items-center gap-1">
+                  {material}
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveMaterial(material)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <X size={12} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
           </div>
         </div>
       </div>
       
-      <div className="flex gap-3 justify-end">
+      <div className="flex justify-end gap-2">
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="submit" className="yarn-gradient text-white border-none hover:opacity-90">
-          {product ? "Update Product" : "Add Product"}
-        </Button>
+        <Button type="submit">Save Product</Button>
       </div>
     </form>
   );
 };
 
-export default ProductForm;
+export default ProductFormWithCustomCategories;
