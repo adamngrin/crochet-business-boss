@@ -10,18 +10,20 @@ const SocialLinks = () => {
       name: "Facebook",
       icon: Facebook,
       url: "https://www.facebook.com/profile.php?id=61560856492820",
-      color: "text-blue-600",
+      color: "bg-blue-600 text-white hover:bg-blue-700",
+      hoverEffect: "hover:scale-110 transition-transform",
     },
     {
       name: "Instagram",
       icon: Instagram,
       url: "https://www.instagram.com/catherine_crochets/",
-      color: "text-pink-600",
+      color: "bg-gradient-to-r from-pink-500 via-purple-500 to-pink-600 text-white hover:from-pink-600 hover:via-purple-600 hover:to-pink-700",
+      hoverEffect: "hover:scale-110 transition-transform",
     },
   ];
 
   return (
-    <div className="flex gap-2">
+    <div className="flex items-center gap-3">
       <TooltipProvider>
         {socialLinks.map((social) => (
           <Tooltip key={social.name}>
@@ -29,16 +31,15 @@ const SocialLinks = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-full w-8 h-8 hover:bg-gray-100"
+                className={`rounded-full w-10 h-10 ${social.color} ${social.hoverEffect} shadow-md`}
                 asChild
               >
                 <a
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={social.color}
                 >
-                  <social.icon size={16} />
+                  <social.icon size={18} />
                 </a>
               </Button>
             </TooltipTrigger>

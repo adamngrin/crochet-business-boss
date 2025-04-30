@@ -57,9 +57,11 @@ const MobileNav = () => {
               ))}
             </nav>
             
-            <div className="mt-8 flex flex-col items-center gap-4">
-              <div className="text-xs text-muted-foreground">Follow Us</div>
-              <SocialLinks />
+            <div className="mt-10 flex flex-col items-center gap-4">
+              <div className="text-sm font-medium text-muted-foreground">Find us on social media</div>
+              <div className="animate-bounce py-2">
+                <SocialLinks />
+              </div>
             </div>
           </div>
         </div>

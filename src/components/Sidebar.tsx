@@ -53,10 +53,14 @@ const Sidebar = () => {
         ))}
       </nav>
       
-      <div className="mt-auto pt-4 space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Follow Us</span>
-          <SocialLinks />
+      <div className="mt-auto pt-6 space-y-4">
+        <div className="border-t pt-4">
+          <div className="flex flex-col gap-3">
+            <span className="text-sm font-medium text-muted-foreground">Follow us on social media</span>
+            <div className="flex justify-center">
+              <SocialLinks />
+            </div>
+          </div>
         </div>
         <button className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary w-full">
           <LogOut size={16} className="shrink-0" />

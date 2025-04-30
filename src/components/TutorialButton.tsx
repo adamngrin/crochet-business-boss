@@ -16,10 +16,10 @@ const TutorialButton = () => {
     <Button
       variant="outline"
       size="icon"
-      className="rounded-full w-8 h-8 fixed bottom-4 right-4 z-50 bg-white border border-yarn-lavender shadow-md"
+      className="rounded-full w-10 h-10 fixed bottom-6 right-6 z-50 bg-white border border-yarn-lavender shadow-md hover:scale-110 transition-transform"
       onClick={handleStartTutorial}
     >
-      <HelpCircle size={16} className="text-yarn-lavender" />
+      <HelpCircle size={18} className="text-yarn-lavender" />
     </Button>
   );
 };
