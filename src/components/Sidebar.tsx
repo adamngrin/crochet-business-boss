@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Home, Package, Users, Calendar, BarChart, Settings, LogOut, Yarn } from "lucide-react";
+import { Home, Package, Users, Calendar, BarChart, Settings, LogOut, CircleUser } from "lucide-react";
 
 const SidebarLink = ({ to, icon: Icon, label, active }: { to: string; icon: React.ElementType; label: string; active: boolean }) => (
   <Link
@@ -25,7 +25,7 @@ const Sidebar = () => {
     <aside className="hidden md:flex flex-col w-64 min-h-screen bg-sidebar p-4 text-sidebar-foreground">
       <div className="flex items-center gap-3 py-4 px-2 mb-8">
         <div className="flex items-center justify-center w-10 h-10 rounded-full yarn-gradient">
-          <Yarn size={20} className="text-white" />
+          <CircleUser size={20} className="text-white" />
         </div>
         <h1 className="text-xl font-semibold">Catherine Crochets</h1>
       </div>

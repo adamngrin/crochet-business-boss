@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Package, Users, Calendar, BarChart, Settings, Yarn } from "lucide-react";
+import { Menu, X, Home, Package, Users, Calendar, BarChart, Settings, CircleUser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ const MobileNav = () => {
       <div className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-8 h-8 rounded-full yarn-gradient">
-            <Yarn size={16} className="text-white" />
+            <CircleUser size={16} className="text-white" />
           </div>
           <span className="text-lg font-semibold">Catherine Crochets</span>
         </div>

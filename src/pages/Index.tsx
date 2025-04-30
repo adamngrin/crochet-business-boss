@@ -1,11 +1,10 @@
-
 import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import MobileNav from "@/components/MobileNav";
 import PageHeader from "@/components/PageHeader";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Package, Users, Calendar, DollarSign, TrendingUp, ShoppingBag } from "lucide-react";
+import { Package, Users, Calendar, DollarSign, TrendingUp, ShoppingBag, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
