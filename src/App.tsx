@@ -13,28 +13,35 @@ import Consignors from "./pages/Consignors";
 import Events from "./pages/Events";
 import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
+import { TutorialProvider } from "./contexts/TutorialContext";
+import Tutorial from "./components/Tutorial";
+import TutorialButton from "./components/TutorialButton";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/products" element={<Products />} />
-          <Route path="/products/:id" element={<Products />} />
-          <Route path="/custom-orders" element={<CustomOrders />} />
-          <Route path="/stores" element={<Stores />} />
-          <Route path="/consignors" element={<Consignors />} />
-          <Route path="/events" element={<Events />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <TutorialProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Tutorial />
+          <TutorialButton />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/products" element={<Products />} />
+            <Route path="/products/:id" element={<Products />} />
+            <Route path="/custom-orders" element={<CustomOrders />} />
+            <Route path="/stores" element={<Stores />} />
+            <Route path="/consignors" element={<Consignors />} />
+            <Route path="/events" element={<Events />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TutorialProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

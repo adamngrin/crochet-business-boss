@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Menu, X, Home, Package, Users, Calendar, BarChart, Settings, CircleUser, Store, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import SocialLinks from "./SocialLinks";
 
 const MobileNav = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -55,6 +56,11 @@ const MobileNav = () => {
                 </Link>
               ))}
             </nav>
+            
+            <div className="mt-8 flex flex-col items-center gap-4">
+              <div className="text-xs text-muted-foreground">Follow Us</div>
+              <SocialLinks />
+            </div>
           </div>
         </div>
       )}
