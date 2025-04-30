@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Home, Package, Users, Calendar, BarChart, Settings, CircleUser } from "lucide-react";
+import { Menu, X, Home, Package, Users, Calendar, BarChart, Settings, CircleUser, Store, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +14,8 @@ const MobileNav = () => {
   const links = [
     { to: "/", label: "Dashboard", icon: Home },
     { to: "/products", label: "Products", icon: Package },
+    { to: "/custom-orders", label: "Custom Orders", icon: ShoppingBag },
+    { to: "/stores", label: "Stores", icon: Store },
     { to: "/consignors", label: "Consignors", icon: Users },
     { to: "/events", label: "Events", icon: Calendar },
     { to: "/reports", label: "Reports", icon: BarChart },

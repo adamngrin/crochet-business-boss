@@ -14,6 +14,18 @@ import { toast } from "@/components/ui/use-toast";
 import ProductForm from "@/components/ProductForm";
 import ProductCard from "@/components/ProductCard";
 
+// Initial categories
+const initialCategories = [
+  "Scarves",
+  "Blankets",
+  "Hats",
+  "Toys",
+  "Decorations",
+  "Clothing",
+  "Accessories",
+  "Other"
+];
+
 // Mock product data
 const initialProducts = [
   {
@@ -86,14 +98,12 @@ const initialProducts = [
 
 const Products = () => {
   const [products, setProducts] = useState(initialProducts);
+  const [categories, setCategories] = useState(initialCategories);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   
-  // Get unique categories
-  const categories = Array.from(new Set(products.map(product => product.category)));
-
   const handleAddProduct = () => {
     setEditingProduct(null);
     setIsFormOpen(true);
@@ -111,6 +121,16 @@ const Products = () => {
       title: "Product deleted",
       description: "The product has been removed from your inventory.",
     });
+  };
+
+  const handleAddCategory = (newCategory: string) => {
+    if (!categories.includes(newCategory)) {
+      setCategories([...categories, newCategory]);
+      toast({
+        title: "Category added",
+        description: `New category "${newCategory}" has been created.`,
+      });
+    }
   };
 
   const handleSaveProduct = (productData: any) => {
@@ -140,6 +160,9 @@ const Products = () => {
     const matchesCategory = selectedCategory ? product.category === selectedCategory : true;
     return matchesSearch && matchesCategory;
   });
+
+  // Get unique categories from products (in case there are categories not in our list)
+  const productCategories = Array.from(new Set(products.map(product => product.category)));
 
   return (
     <>
@@ -191,7 +214,7 @@ const Products = () => {
               >
                 All
               </Button>
-              {categories.map((category) => (
+              {productCategories.map((category) => (
                 <Button 
                   key={category} 
                   variant={selectedCategory === category ? "secondary" : "outline"} 
@@ -286,8 +309,10 @@ const Products = () => {
             </DialogHeader>
             <ProductForm 
               product={editingProduct}
+              categories={categories}
               onSave={handleSaveProduct}
               onCancel={() => setIsFormOpen(false)}
+              onAddCategory={handleAddCategory}
             />
           </DialogContent>
         </Dialog>

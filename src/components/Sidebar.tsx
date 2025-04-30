@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Home, Package, Users, Calendar, BarChart, Settings, LogOut, CircleUser } from "lucide-react";
+import { Home, Package, Users, Calendar, BarChart, Settings, LogOut, CircleUser, Store, ShoppingBag } from "lucide-react";
 
 const SidebarLink = ({ to, icon: Icon, label, active }: { to: string; icon: React.ElementType; label: string; active: boolean }) => (
   <Link
@@ -33,6 +33,8 @@ const Sidebar = () => {
       <div className="flex flex-col gap-1">
         <SidebarLink to="/" icon={Home} label="Dashboard" active={currentPath === "/"} />
         <SidebarLink to="/products" icon={Package} label="Products" active={currentPath.startsWith("/products")} />
+        <SidebarLink to="/custom-orders" icon={ShoppingBag} label="Custom Orders" active={currentPath.startsWith("/custom-orders")} />
+        <SidebarLink to="/stores" icon={Store} label="Stores" active={currentPath.startsWith("/stores")} />
         <SidebarLink to="/consignors" icon={Users} label="Consignors" active={currentPath.startsWith("/consignors")} />
         <SidebarLink to="/events" icon={Calendar} label="Events" active={currentPath.startsWith("/events")} />
         <SidebarLink to="/reports" icon={BarChart} label="Reports" active={currentPath.startsWith("/reports")} />

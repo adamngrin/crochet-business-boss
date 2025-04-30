@@ -21,34 +21,33 @@ interface ProductFormProps {
     materials: string[];
     imageUrl?: string;
   } | null;
+  categories: string[];
   onSave: (productData: any) => void;
   onCancel: () => void;
+  onAddCategory: (category: string) => void;
 }
 
-const categories = [
-  "Scarves",
-  "Blankets",
-  "Hats",
-  "Toys",
-  "Decorations",
-  "Clothing",
-  "Accessories",
-  "Other"
-];
-
-const ProductForm = ({ product, onSave, onCancel }: ProductFormProps) => {
+const ProductForm = ({ 
+  product, 
+  categories, 
+  onSave, 
+  onCancel, 
+  onAddCategory 
+}: ProductFormProps) => {
   const [formData, setFormData] = useState({
     name: product?.name || "",
     description: product?.description || "",
     price: product?.price || 0,
     cost: product?.cost || 0,
     stock: product?.stock || 0,
-    category: product?.category || categories[0],
+    category: product?.category || (categories.length > 0 ? categories[0] : ""),
     materials: product?.materials || [],
     imageUrl: product?.imageUrl || "",
   });
   
   const [newMaterial, setNewMaterial] = useState("");
+  const [newCategory, setNewCategory] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -68,6 +67,11 @@ const ProductForm = ({ product, onSave, onCancel }: ProductFormProps) => {
   };
   
   const handleSelectChange = (value: string, field: string) => {
+    if (field === "category" && value === "add-new") {
+      setShowNewCategoryInput(true);
+      return;
+    }
+    
     setFormData({
       ...formData,
       [field]: value
@@ -91,6 +95,23 @@ const ProductForm = ({ product, onSave, onCancel }: ProductFormProps) => {
     });
   };
   
+  const handleAddNewCategory = () => {
+    if (newCategory.trim()) {
+      onAddCategory(newCategory.trim());
+      setFormData({
+        ...formData,
+        category: newCategory.trim()
+      });
+      setNewCategory("");
+      setShowNewCategoryInput(false);
+    }
+  };
+  
+  const handleCancelNewCategory = () => {
+    setShowNewCategoryInput(false);
+    setNewCategory("");
+  };
+  
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -111,6 +132,7 @@ const ProductForm = ({ product, onSave, onCancel }: ProductFormProps) => {
     if (!formData.description.trim()) newErrors.description = "Description is required";
     if (formData.price <= 0) newErrors.price = "Price must be greater than zero";
     if (formData.stock < 0) newErrors.stock = "Stock cannot be negative";
+    if (!formData.category) newErrors.category = "Category is required";
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -179,22 +201,54 @@ const ProductForm = ({ product, onSave, onCancel }: ProductFormProps) => {
           
           {/* Category */}
           <div>
-            <Label htmlFor="category" className="block mb-1">Category</Label>
-            <Select 
-              value={formData.category} 
-              onValueChange={(value) => handleSelectChange(value, "category")}
-            >
-              <SelectTrigger className="yarn-input">
-                <SelectValue placeholder="Select category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category} value={category}>
-                    {category}
+            <Label htmlFor="category" className={cn("block mb-1", errors.category && "text-destructive")}>Category</Label>
+            {!showNewCategoryInput ? (
+              <Select 
+                value={formData.category} 
+                onValueChange={(value) => handleSelectChange(value, "category")}
+              >
+                <SelectTrigger className={cn("yarn-input", errors.category && "border-destructive")}>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((category) => (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="add-new" className="text-primary font-medium">
+                    + Add New Category
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
+            ) : (
+              <div className="flex gap-2">
+                <Input
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                  placeholder="New category name"
+                  className="yarn-input"
+                  autoFocus
+                />
+                <Button 
+                  type="button" 
+                  onClick={handleAddNewCategory}
+                  disabled={!newCategory.trim()}
+                  size="sm"
+                >
+                  Add
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="ghost" 
+                  onClick={handleCancelNewCategory}
+                  size="sm"
+                >
+                  Cancel
+                </Button>
+              </div>
+            )}
+            {errors.category && <p className="text-xs text-destructive mt-1">{errors.category}</p>}
           </div>
           
           {/* Stock */}
